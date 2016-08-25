@@ -7,7 +7,7 @@ check:
 
 test:
 	R CMD INSTALL .
-	R -q -e "devtools::test()"
+	Rscript tests/test_SparkSimple.R
 
 clean:
 	rm tests/testthat/log4j.spark.log*
