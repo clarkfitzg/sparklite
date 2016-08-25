@@ -1,5 +1,7 @@
-
 #' Parallelize computations using a Spark cluster
+#'
+#' This works by serializing x onto the worker nodes, running the
+#' computation, and finally deserializing the result.
 #' 
 #' @param cl cluster is a Spark connection as returned from
 #'      \code{\link[sparkapi]{start_shell}}
@@ -9,25 +11,52 @@
 #' @return list with \code{fun} evaluated at each element of x
 #'
 #' @examples
+#' library(sparkapi)
+#' sc <- start_shell(master = "local")
+#' clusterApply(sc, 1:10, function(x) x + 2)
 #'
-#' @seealso \code{\link[parallel]{clusterApply}} in \code{parallel} package
+#' @seealso \code{\link[base]{lapply}}, 
+#'      \code{\link[parallel]{clusterApply}} in \code{parallel} package
 #' @export
 clusterApply <- function(cl, x, fun, ...){
 
+    sc <- cl
     x <- as.list(x)
     fun <- match.fun(fun)
+
+    sparkfun <- function(partIndex, part) {
+        fun(part)
+    }
+
+    packageNamesArr <- serialize(NULL, NULL)
+    broadcastArr <- list()
 
     serial_parts <- lapply(x, serialize, connection = NULL)
 
     # An RDD of the serialized R parts
     # This is class org.apache.spark.api.java.JavaRDD
-    RDD <- sparkapi::invoke_static(sc,
+    xrdd <- sparkapi::invoke_static(sc,
                 "org.apache.spark.api.r.RRDD",
                 "createRDDFromArray",
                 sparkapi::java_context(sc),
-                serial_parts)
+                serial_parts
+                )
 
+    # Use Spark to apply the function
+    fxrdd <- sparkapi::invoke_new(sc,
+                "org.apache.spark.api.r.RRDD",  # A new instance of this class
+                sparkapi::invoke(xrdd, "rdd"),
+                serialize(sparkfun, connection = NULL),
+                "byte",  # name of serializer / deserializer
+                "byte",  # name of serializer / deserializer
+                packageNamesArr,
+                broadcastArr,
+                sparkapi::invoke(xrdd, "classTag")
+                )
 
+    # Collect and return
+    rawlist = sparkapi::invoke(fxrdd, "collect")
+    lapply(rawlist, unserialize)
 }
 
 

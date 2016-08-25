@@ -6,6 +6,7 @@ check:
 	R CMD CHECK .
 
 test:
+	R CMD INSTALL .
 	R -q -e "devtools::test()"
 
 clean:

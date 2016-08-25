@@ -18,12 +18,17 @@ clusterApply(cl, x, fun, ...)
 list with \code{fun} evaluated at each element of x
 }
 \description{
-Parallelize computations using a Spark cluster
+This works by serializing x onto the worker nodes, running the
+computation, and finally deserializing the result.
 }
 \examples{
+library(sparkapi)
+sc <- start_shell(master = "local")
+clusterApply(sc, 1:10, function(x) x + 2)
 
 }
 \seealso{
-\code{\link[parallel]{clusterApply}} in \code{parallel} package
+\code{\link[base]{lapply}}, 
+     \code{\link[parallel]{clusterApply}} in \code{parallel} package
 }
 

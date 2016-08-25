@@ -1,7 +1,8 @@
 library(sparkapi)
 
 if(!exists("sc")){
-    sc <- start_shell(master = "local")
+    sc <- start_shell(master = "local", 
+            spark_home = "/Users/clark/Library/Caches/spark/spark-2.0.0-preview-bin-hadoop2.6/")
 }
 
 ############################################################
@@ -16,3 +17,9 @@ test_that("clusterApply on numeric vector", {
     expect_equal(actual, expected)
 
 })
+
+
+
+############################################################
+
+stop_shell(sc)
