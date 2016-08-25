@@ -1,6 +1,8 @@
 # Not possible to use testthat here because "manually constructed
 # enviroment" passes when it should fail. 
 # Unexpected things happening with closures and environments.
+#
+# So instead just run this script
 
 library(sparkapi)
 library(SparkSimple)
@@ -45,9 +47,11 @@ add_ab <- function(x) x + a + b
 x <- 1:10
 expected <- lapply(x, add_ab)
 
-actual <- clusterApply(sc, x, add_ab, varlist = c("a", "b"))
+add_ab_closure <- makeClosure(add_ab, c("a", "b"))
 
-pass["manually constructed environment"] <-
+actual <- clusterApply(sc, x, add_ab_closure)
+
+pass["manually constructed closure"] <-
     all.equal(actual, expected)
 
 ############################################################
