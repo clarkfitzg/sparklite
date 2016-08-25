@@ -1,4 +1,4 @@
 library(testthat)
-library(rddlist)
+library(SparkSimple)
 
-test_check("rddlist")
+test_check("SparkSimple")
