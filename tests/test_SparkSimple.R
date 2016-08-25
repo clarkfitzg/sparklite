@@ -24,22 +24,56 @@ pass["basic operation on numeric vector"] <-
 
 ############################################################
 
- g <- 100
- x <- 1:10
- addg <- function(x) x + g
- expected <- lapply(x, addg)
- actual <- clusterApply(sc, x, addg)
+fmaker <- function(){
+    a <- 100
+    function(x) x + a
+}
+f <- fmaker()
+x <- 1:10
+expected <- lapply(x, f)
+
+actual <- clusterApply(sc, x, f)
+
+pass["evaluate a closure"] <-
+    all.equal(actual, expected)
+
+############################################################
+
+a <- 20
+b <- 30
+add_ab <- function(x) x + a + b
+x <- 1:10
+expected <- lapply(x, add_ab)
+
+actual <- clusterApply(sc, x, add_ab, varlist = c("a", "b"))
 
 pass["manually constructed environment"] <-
     all.equal(actual, expected)
 
 ############################################################
 
+a <- 20
+b <- 30
+fmaker <- function(){
+    a <- 100  # This value of a should show up
+    function(x) x + a + b
+}
+f <- fmaker()
+x <- 1:10
+expected <- lapply(x, f)
+
+actual <- clusterApply(sc, x, f, varlist = c("a", "b"))
+
+pass["closure scoping consistent with R"] <-
+    all.equal(actual, expected)
+
+############################################################
+
 if (!all(pass)){
     fails <- names(pass)[!pass]
-    print("test failures:\n", paste(fails, sep = "\n"))
+    cat("\ntest failures:\n", paste(fails, sep = "\n"))
 } else{
-    print("tests PASS!")
+    cat("\ntests PASS!\n")
 }
 
 stop_shell(sc)

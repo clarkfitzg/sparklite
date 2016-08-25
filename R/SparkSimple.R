@@ -7,6 +7,8 @@
 #'      \code{\link[sparkapi]{start_shell}}
 #' @param x R object that can be coerced to list
 #' @param fun function to evaluate
+#' @param varlist character vector of names of objects to export.
+#' @param envir environment from which to export variables
 #'
 #' @return list with \code{fun} evaluated at each element of x
 #'
@@ -16,20 +18,23 @@
 #' clusterApply(sc, 1:10, function(x) x + 2)
 #'
 #' @seealso \code{\link[base]{lapply}}, 
-#'      \code{\link[parallel]{clusterApply}} in \code{parallel} package
+#'      \code{\link[parallel]{clusterApply}},
+#'      \code{\link[parallel]{clusterExport}}, in \code{parallel} package
 #' @export
-clusterApply <- function(cl, x, fun, ...){
+clusterApply <- function(cl, x, fun, varlist = character(0), envir = .GlobalEnv, ...){
 
     sc <- cl
     x <- as.list(x)
+
     fun <- match.fun(fun)
 
     sparkfun <- function(partIndex, part) {
         fun(part)
     }
+    
+    packageNamesArr <- serialize(NULL, connection = NULL)
 
-    packageNamesArr <- serialize(NULL, NULL)
-    broadcastArr <- list()
+    spark.env <- environment(sparkfun)
 
     xserial <- lapply(x, serialize, connection = NULL)
 
@@ -47,10 +52,10 @@ clusterApply <- function(cl, x, fun, ...){
                 "org.apache.spark.api.r.RRDD",  # A new instance of this class
                 sparkapi::invoke(xrdd, "rdd"),
                 serialize(sparkfun, connection = NULL),
-                "byte",  # name of serializer / deserializer
-                "byte",  # name of serializer / deserializer
+                "byte",     # name of serializer / deserializer
+                "byte",     # name of serializer / deserializer
                 packageNamesArr,
-                broadcastArr,
+                list(),     # broadcastArr
                 sparkapi::invoke(xrdd, "classTag")
                 )
 
