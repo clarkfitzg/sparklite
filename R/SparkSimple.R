@@ -29,7 +29,7 @@ build_parent_env <- function(varlist, envir){
 #' f <- makeClosure(f, c("a", "helperfunc"))
 #' clusterApply(sc, 1:10, f)
 #' @export
-updateClosure <- function(fun, varlist, envir = .GlobalEnv){
+update_closure <- function(fun, varlist, envir = .GlobalEnv){
 }
 
 

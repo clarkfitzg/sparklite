@@ -7,6 +7,7 @@
 library(sparkapi)
 library(SparkSimple)
 
+# TODO: hardcoded in a recent version of the library here.
 if(!exists("sc")){
     sc <- start_shell(master = "local", 
             spark_home = "/Users/clark/Library/Caches/spark/spark-2.0.0-preview-bin-hadoop2.6/")
@@ -47,7 +48,7 @@ add_ab <- function(x) x + a + b
 x <- 1:10
 expected <- lapply(x, add_ab)
 
-add_ab_closure <- makeClosure(add_ab, c("a", "b"))
+add_ab_closure <- update_closure(add_ab, c("a", "b"))
 
 actual <- clusterApply(sc, x, add_ab_closure)
 
@@ -59,16 +60,17 @@ pass["manually constructed closure"] <-
 a <- 20
 b <- 30
 fmaker <- function(){
-    a <- 100  # This value of a should show up
+    a <- 100
     function(x) x + a + b
 }
 f <- fmaker()
-x <- 1:10
-expected <- lapply(x, f)
+x <- 1:3
+expected <- as.list(x + a + b)
+fnew <- update_closure(f, c("a", "b"))
 
-actual <- clusterApply(sc, x, f, varlist = c("a", "b"))
+actual <- clusterApply(sc, x, fnew)
 
-pass["closure scoping consistent with R"] <-
+pass["closure updates as expected"] <-
     all.equal(actual, expected)
 
 ############################################################

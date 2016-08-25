@@ -24,11 +24,20 @@ computation, and finally deserializing the result.
 \examples{
 library(sparkapi)
 sc <- start_shell(master = "local")
+
 clusterApply(sc, 1:10, function(x) x + 2)
+
+a <- 20
+helperfunc <- function(x) sin(x)
+f <- function(x) helperfunc(x) + a
+# To apply f you'll need to also get it's dependencies
+f <- makeClosure(f, c("a", "helperfunc"))
+clusterApply(sc, 1:10, f)
 
 }
 \seealso{
-\code{\link[base]{lapply}}, 
-     \code{\link[parallel]{clusterApply}} in \code{parallel} package
+\code{makeClosure}, \code{\link[base]{lapply}}, 
+     \code{\link[parallel]{clusterApply}},
+     \code{\link[parallel]{clusterExport}}, in \code{parallel} package
 }
 
