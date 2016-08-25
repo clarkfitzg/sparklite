@@ -7,7 +7,7 @@ if(!exists("sc")){
 
 ############################################################
 
-test_that("clusterApply on numeric vector", {
+test_that("basic operation on numeric vector", {
 
     x <- 1:10
     add2 <- function(x) x + 2
@@ -18,6 +18,19 @@ test_that("clusterApply on numeric vector", {
 
 })
 
+
+test_that("manually constructed environment", {
+
+    x <- 1:10
+    globalvar <- 100
+    addglobal <- function(x) x + globalvar
+    expected <- lapply(x, addglobal)
+
+    actual <- clusterApply(sc, x, addglobal)
+
+    expect_equal(actual, expected)
+
+})
 
 
 ############################################################

@@ -31,7 +31,7 @@ clusterApply <- function(cl, x, fun, ...){
     packageNamesArr <- serialize(NULL, NULL)
     broadcastArr <- list()
 
-    serial_parts <- lapply(x, serialize, connection = NULL)
+    xserial <- lapply(x, serialize, connection = NULL)
 
     # An RDD of the serialized R parts
     # This is class org.apache.spark.api.java.JavaRDD
@@ -39,7 +39,7 @@ clusterApply <- function(cl, x, fun, ...){
                 "org.apache.spark.api.r.RRDD",
                 "createRDDFromArray",
                 sparkapi::java_context(sc),
-                serial_parts
+                xserial
                 )
 
     # Use Spark to apply the function
