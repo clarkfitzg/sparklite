@@ -1,4 +1,4 @@
-# SparkSimple
+# sparklite
 
 Lightweight R package to use an [Apache Spark](http://spark.apache.org/)
 cluster for parallel computation

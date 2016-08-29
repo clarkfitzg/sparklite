@@ -1,4 +1,4 @@
-Package: SparkSimple
+Package: sparklite
 Type: Package
 Title: Lightweight frontend to run R code on an Apache Spark cluster
 Version: 0.1.0

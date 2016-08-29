@@ -5,7 +5,7 @@
 # So instead just run this script
 
 library(sparkapi)
-library(SparkSimple)
+library(sparklite)
 
 # TODO: hardcoded in a recent version of the library here.
 if(!exists("sc")){

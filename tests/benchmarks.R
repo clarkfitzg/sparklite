@@ -5,7 +5,7 @@
 
 library(microbenchmark)
 library(sparkapi)
-library(SparkSimple)
+library(sparklite)
 
 sc <- start_shell(master = "local", 
         spark_home = "/Users/clark/Library/Caches/spark/spark-2.0.0-preview-bin-hadoop2.6/")
