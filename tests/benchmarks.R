@@ -29,7 +29,7 @@ microbenchmark({
 # BEFORE: 502 seconds
 # AFTER: 508 seconds
 #
-# SimpleSpark
+# sparklite package
 # N = 5     2.98 seconds
 # N = 20    7.52 seconds
 # N = 100   39.5 seconds
