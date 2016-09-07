@@ -20,7 +20,12 @@ Suppose we want to check how well [similar
 invariance](https://en.wikipedia.org/wiki/Similarity_invariance) of the
 trace holds numerically for random matrices.
 
+This is useful for demonstration because this is an expensive function taking
+between O(n^2) and O(n^3) operations. Push the heavy computation to
+the cluster.
+
 ```
+
 sc <- sparkapi::start_shell(master = "local")
 
 library(sparklite)
@@ -38,9 +43,14 @@ sim <- function(seed, n = 1000){
 }
 
 # TODO: I think there are better ways to set psuedorandom seeds
-results <- clusterApply(sc, 1:10, trace_inverse)
+results <- clusterApply(sc, 1:10, sim)
+
+sparkapi::stop_shell(sc)
 
 ```
+
+The web UI to watch a local Spark job progress is here by default:
+`http://localhost:4040/jobs/`
 
 ## Motivation
 
