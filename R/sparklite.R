@@ -69,7 +69,7 @@ clusterApply <- function(cl, x, fun, ...){
     fun <- match.fun(fun)
 
     sparkfun <- function(partIndex, part) {
-        fun(part)
+        fun(part, ...)
     }
 
     packageNamesArr <- serialize(NULL, connection = NULL)

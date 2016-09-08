@@ -24,9 +24,13 @@ This is useful for demonstration because this is an expensive function taking
 between O(n^2) and O(n^3) operations. Push the heavy computation to
 the cluster.
 
+Note that this is the naive way to set random seeds. For more sophisticated
+uses see the `rsprng` and `rlecuyer` packages.
+
 ```
 
-sc <- sparkapi::start_shell(master = "local")
+# Here the "local[3]" argument means there will be 3 local workers
+sc <- sparkapi::start_shell(master = "local[3]", app_name = "sparklite_demo")
 
 library(sparklite)
 
@@ -36,14 +40,11 @@ sim <- function(seed, n = 1000){
     B <- matrix(rnorm(n * n), nrow = n)
     Binv <- solve(B)
     BAB <- Binv %*% A %*% B
-
     tr <- function(X) sum(diag(X))
-
     c(trA = tr(A), trBAB = tr(BAB))
 }
 
-# TODO: I think there are better ways to set psuedorandom seeds
-results <- clusterApply(sc, 1:10, sim)
+results <- clusterApply(sc, 1:20, sim)
 
 sparkapi::stop_shell(sc)
 
