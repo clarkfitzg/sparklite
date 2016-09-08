@@ -7,7 +7,7 @@ library(microbenchmark)
 library(sparkapi)
 library(sparklite)
 
-sc <- start_shell(master = "local", 
+sc <- start_shell(master = "local",
         spark_home = "/Users/clark/Library/Caches/spark/spark-2.0.0-preview-bin-hadoop2.6/")
 
 df <- read.csv("~/data/nycflights13.csv")
@@ -36,7 +36,7 @@ microbenchmark({
 # N = 500   320 seconds
 #
 # Here N corresponds to the number of partitions in the data, and also the
-# number of R processes that Spark needs to spin up. 
+# number of R processes that Spark needs to spin up.
 #
 # So we may just be measuring the overhead of spinning up R processes,
 # which isn't really that interesting.
